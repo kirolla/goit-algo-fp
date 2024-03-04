@@ -6,7 +6,7 @@ import uuid
 
 # Клас, що представляє вузол дерева
 class Node:
-    def __init__(self, key, color="#000000"):  # Змінено колір на чорний (#000000)
+    def __init__(self, key, color="skyblue"):  
         self.left = None
         self.right = None
         self.val = key
