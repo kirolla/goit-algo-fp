@@ -6,7 +6,7 @@ import uuid
 
 # Клас, що представляє вузол дерева
 class Node:
-    def __init__(self, key, color="skyblue"):  
+    def __init__(self, key, color="#000000"):  
         self.left = None
         self.right = None
         self.val = key
@@ -74,7 +74,7 @@ class TreeVis:
         def visit_func(node):
             # Генерація кольору вузла за допомогою лічильника
             color = "#{:02x}{:02x}{:02x}".format(
-                min(255, 5 + counter[0] * 10), min(255, 100 + counter[0] * 10), min(255, 150 + counter[0] * 20)
+                min(255, 5 + counter[0] * 25), min(255, 100 + counter[0] * 25), min(255, 150 + counter[0] * 25)
             )
             node.color = color
             colors.append(color)
