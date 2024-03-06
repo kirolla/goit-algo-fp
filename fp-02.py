@@ -1,7 +1,6 @@
 import turtle
 
 def draw_branch(t, length, level):
-    
     # Базовий випадок: якщо рівень рекурсії досягнув 0, припиняємо рекурсію
     if level == 0:
         return
@@ -13,13 +12,13 @@ def draw_branch(t, length, level):
     t.left(45)
 
     # Рекурсивний виклик для малювання лівої гілки
-    draw_branch(t, length/2, level-1)
+    draw_branch(t, length * 0.6, level - 1)
 
     # Поворот вправо на 90 градусів
     t.right(90)
 
     # Рекурсивний виклик для малювання правої гілки
-    draw_branch(t, length/2, level-1)
+    draw_branch(t, length * 0.6, level - 1)
 
     # Поворот вліво на 45 градусів
     t.left(45)
@@ -28,7 +27,6 @@ def draw_branch(t, length, level):
     t.backward(length)
 
 def draw_pifagoras_tree(level):
-    
     # Створення об'єкту-черепашки
     t = turtle.Turtle()
 
@@ -54,7 +52,7 @@ def draw_pifagoras_tree(level):
 
     # Колір гілок
     t.color("green")
-    
+
     # Малюємо гілки дерева
     draw_branch(t, 200, level)
 
