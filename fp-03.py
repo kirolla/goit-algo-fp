@@ -1,23 +1,35 @@
-import matplotlib.pyplot as plt
-import networkx as nx
+import heapq
 
 # Створення графа
-G = nx.Graph()
+graph = {
+    'A': {'B': 5, 'C': 10},
+    'B': {'A': 5, 'D': 3},
+    'C': {'A': 10, 'D': 2},
+    'D': {'B': 3, 'C': 2, 'E': 4},
+    'E': {'D': 4}
+}
 
-# Додавання міст і доріг
-G.add_edge('A', 'B', weight=5)
-G.add_edge('A', 'C', weight=10)
-G.add_edge('B', 'D', weight=3)
-G.add_edge('C', 'D', weight=2)
-G.add_edge('D', 'E', weight=4)
+def dijkstra(graph, start):
+    shortest_paths = {node: float('inf') for node in graph}
+    shortest_paths[start] = 0
+    priority_queue = [(0, start)]
 
-# Застосування алгоритму Дейкстри з використанням бінарної купи
-shortest_paths = nx.single_source_dijkstra_path(G, source='A', weight='weight')
-shortest_path_lengths = nx.single_source_dijkstra_path_length(G, source='A', weight='weight')
+    while priority_queue:
+        current_distance, current_node = heapq.heappop(priority_queue)
 
-print("Найкоротші шляхи від вузла 'A' до всіх інших вузлів:")
+        if current_distance > shortest_paths[current_node]:
+            continue
+
+        for neighbor, weight in graph[current_node].items():
+            distance = current_distance + weight
+            if distance < shortest_paths[neighbor]:
+                shortest_paths[neighbor] = distance
+                heapq.heappush(priority_queue, (distance, neighbor))
+
+    return shortest_paths
+
+start_node = 'A'
+shortest_paths = dijkstra(graph, start_node)
+
+print("Найкоротші шляхи від вузла '{}' до всіх інших вузлів:".format(start_node))
 print(shortest_paths)
-
-print("Довжини найкоротших шляхів від вузла 'A' до всіх інших вузлів:")
-print(shortest_path_lengths)
-
