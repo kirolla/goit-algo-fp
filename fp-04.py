@@ -1,92 +1,55 @@
-import matplotlib.pyplot as plt
-import networkx as nx
 import uuid
+import networkx as nx
+import matplotlib.pyplot as plt
 
-# Клас, що представляє вузол дерева
 class Node:
-    def __init__(self, key):
+    def __init__(self, key, color="skyblue"):
         self.left = None
         self.right = None
         self.val = key
+        self.color = color
         self.id = str(uuid.uuid4())
 
-# Клас, що представляє бінарну купу
-class Heap:
-    def __init__(self, values=None):
-        self.root = None
-        if values is not None:
-            self.build(values)
+def add_edges(graph, node, pos, x=0, y=0, layer=1):
+    if node is not None:
+        graph.add_node(node.id, color=node.color, label=node.val)
+        if node.left:
+            graph.add_edge(node.id, node.left.id)
+            l = x - 1 / 2 ** layer
+            pos[node.left.id] = (l, y - 1)
+            l = add_edges(graph, node.left, pos, x=l, y=y - 1, layer=layer + 1)
+        if node.right:
+            graph.add_edge(node.id, node.right.id)
+            r = x + 1 / 2 ** layer
+            pos[node.right.id] = (r, y - 1)
+            r = add_edges(graph, node.right, pos, x=r, y=y - 1, layer=layer + 1)
+    return graph
 
-    # Побудова бінарної купи зі списку значень
-    def build(self, values):
-        for value in values:
-            self.insert(value)
+def draw_tree(tree_root):
+    tree = nx.DiGraph()
+    pos = {tree_root.id: (0, 0)}
+    tree = add_edges(tree, tree_root, pos)
 
-    # Вставка значення в купу
-    def insert(self, value):
-        if self.root is None:
-            self.root = Node(value)
+    colors = [node[1]['color'] for node in tree.nodes(data=True)]
+    labels = {node[0]: node[1]['label'] for node in tree.nodes(data=True)}
+
+    plt.figure(figsize=(8, 5))
+    nx.draw(tree, pos=pos, labels=labels, arrows=False, node_size=2500, node_color=colors)
+    plt.show()
+
+def list_to_heap(values):
+    root = Node(values[0])
+    heap = [root]
+    for i in range(1, len(values)):
+        node = Node(values[i])
+        heap.append(node)
+        parent_index = (i - 1) // 2
+        if i % 2 == 0:
+            heap[parent_index].right = node
         else:
-            queue = [self.root]
-            while queue:
-                current = queue.pop(0)
-                if not current.left:
-                    current.left = Node(value)
-                    break
-                else:
-                    queue.append(current.left)
-                if not current.right:
-                    current.right = Node(value)
-                    break
-                else:
-                    queue.append(current.right)
+            heap[parent_index].left = node
+    return root
 
-# Клас для візуалізації дерева
-class TreeVis:
-    # Статичний метод для візуалізації дерева
-    def visualize_heap(self, heap):
-        graph = nx.DiGraph()
-        pos = {}
-        TreeVis.build_graph(heap.root, graph, pos)
-        labels = {node: data["label"] for node, data in graph.nodes(data=True)}
-
-        # Візуалізація графа
-        plt.figure(figsize=(8, 5))
-        nx.draw(
-            graph,
-            pos=pos,
-            labels=labels,
-            with_labels=True,
-            arrows=False,
-            node_size=2500,
-        )
-        plt.show()
-
-    # Статичний метод для побудови графа дерева
-    def build_graph(node, graph=None, pos={}, x=0, y=0, layer=0):
-        if node is not None:
-            graph.add_node(node.id, label=node.val)
-            pos[node.id] = (x, y)
-            layer_gap = 1 / (2 ** (layer + 1))
-            if node.left:
-                graph.add_edge(node.id, node.left.id)
-                TreeVis.build_graph(
-                    node.left, graph, pos, x=x - layer_gap, y=y - 1, layer=layer + 1
-                )
-            if node.right:
-                graph.add_edge(node.id, node.right.id)
-                TreeVis.build_graph(
-                    node.right, graph, pos, x=x + layer_gap, y=y - 1, layer=layer + 1
-                )
-        return graph, pos
-
-# Головна функція для запуску програми
-def main():
-    values = [1, 3, 2, 7, 6, 4, 5]
-    heap = Heap(values)
-    tree_visualizer = TreeVis()
-    tree_visualizer.visualize_heap(heap)
-
-# Виклик головної функції при запуску скрипту
-if __name__ == "__main__":
-    main()
+values = [1, 3, 2, 7, 6, 4, 5]
+heap_root = list_to_heap(values)
+draw_tree(heap_root)
